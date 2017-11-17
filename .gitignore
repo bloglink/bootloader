@@ -1,0 +1,81 @@
+# Compiled Object files
+*.slo
+*.lo
+*.o
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+#*.ld
+
+# Compiled binaries
+*.bin
+*.elf
+*.hex
+*.map
+
+# Eclipse workfiles
+*.xml
+.settings
+Debug
+Release
+
+# CooCox workfiles
+*.cogui
+*.comarker
+#*.coproj
+*.pbxproj
+*.comemgui
+*.cproject
+*.project
+debug.config
+
+# JLink
+*.jflash
+
+# Trash
+*.bak
+
+# Object files
+*.o
+
+# Dependency
+*.d
+
+# Output
+*.htm
+*.axf
+*.sca
+*.crf
+*.iex
+*.lnp
+
+# Libraries
+*.lib
+*.a
+
+# Shared objects (inc. Windows DLLs)
+*.dll
+*.so
+*.so.*
+*.dylib
+
+# Executables
+#*.exe
+#*.out
+#*.app
+*.hex
+
+# Keil
+*.lst
+*.bak
+*.dep
+*.map
+*.sct
+*.tra
+*.__i
