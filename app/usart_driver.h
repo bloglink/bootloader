@@ -3,6 +3,7 @@
 
 #include "stm32f10x.h"
 
+void USARTx_DeInit(void);
 void USARTx_Config(uint32_t bitrate);
 void USART1_Config(uint32_t bitrate);
 void USART2_Config(uint32_t bitrate);

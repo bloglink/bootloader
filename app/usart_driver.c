@@ -13,6 +13,12 @@ uint8_t  UsartBuffer[1028];
 uint32_t UsartCount;
 uint32_t UsartTime;
 uint32_t Usart;
+void USARTx_DeInit(void)
+{
+	USART_DeInit(USART1);
+	USART_DeInit(USART2);
+	USART_DeInit(USART3);
+}
 /*******************************************************************************
  * version:    1.0
  * author:     link
@@ -34,7 +40,7 @@ void USARTx_Config(uint32_t bitrate)
  ******************************************************************************/
 void USART1_Config(uint32_t bitrate)
 {	
-	NVIC_InitTypeDef NVIC_InitStructure;  
+	//NVIC_InitTypeDef NVIC_InitStructure;  
 	GPIO_InitTypeDef  GPIO_InitStructure;
 	USART_InitTypeDef USART_InitStructure;
 
@@ -56,11 +62,11 @@ void USART1_Config(uint32_t bitrate)
 	USART_InitStructure.USART_BaudRate = bitrate;
 	USART_Init(USART1, &USART_InitStructure); 
 
-	NVIC_InitStructure.NVIC_IRQChannel = USART1_IRQn;  
-	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0x0F;	
-	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0x0F;
-	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;  
-	NVIC_Init(&NVIC_InitStructure);  
+	//NVIC_InitStructure.NVIC_IRQChannel = USART1_IRQn;  
+	//NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0x0F;	
+	//NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0x0F;
+	//NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;  
+	//NVIC_Init(&NVIC_InitStructure);  
 	//USART_ITConfig(USART1, USART_IT_RXNE, ENABLE); 
 
 	USART_Cmd(USART1, ENABLE);
@@ -73,7 +79,7 @@ void USART1_Config(uint32_t bitrate)
  ******************************************************************************/
 void USART2_Config(uint32_t bitrate)
 {
-	NVIC_InitTypeDef NVIC_InitStructure;  
+	//NVIC_InitTypeDef NVIC_InitStructure;  
 	GPIO_InitTypeDef  GPIO_InitStructure;
 	USART_InitTypeDef USART_InitStructure;
 
@@ -94,11 +100,11 @@ void USART2_Config(uint32_t bitrate)
 	USART_InitStructure.USART_BaudRate = bitrate;
 	USART_Init(USART2, &USART_InitStructure); 
 
-	NVIC_InitStructure.NVIC_IRQChannel = USART2_IRQn;  
-	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0x0F;	
-	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0x0F;
-	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;  
-	NVIC_Init(&NVIC_InitStructure);  
+	//NVIC_InitStructure.NVIC_IRQChannel = USART2_IRQn;  
+	//NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0x0F;	
+	//NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0x0F;
+	//NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;  
+	//NVIC_Init(&NVIC_InitStructure);  
 	//USART_ITConfig(USART2, USART_IT_RXNE, ENABLE); 
 
 	USART_Cmd(USART2, ENABLE);
@@ -111,7 +117,7 @@ void USART2_Config(uint32_t bitrate)
  ******************************************************************************/
 void USART3_Config(uint32_t bitrate)
 {
-	NVIC_InitTypeDef NVIC_InitStructure;  
+	//NVIC_InitTypeDef NVIC_InitStructure;  
 	GPIO_InitTypeDef  GPIO_InitStructure;
 	USART_InitTypeDef USART_InitStructure;
 
@@ -132,11 +138,11 @@ void USART3_Config(uint32_t bitrate)
 	USART_InitStructure.USART_BaudRate = bitrate;
 	USART_Init(USART3, &USART_InitStructure); 
 
-	NVIC_InitStructure.NVIC_IRQChannel = USART3_IRQn;  
-	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0x0;	
-	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0x0;
-	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;  
-	NVIC_Init(&NVIC_InitStructure);  
+	//NVIC_InitStructure.NVIC_IRQChannel = USART3_IRQn;  
+	//NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0x0;	
+	//NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0x0;
+	//NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;  
+	//NVIC_Init(&NVIC_InitStructure);  
 	//USART_ITConfig(USART3, USART_IT_RXNE, ENABLE); 
 
 	USART_Cmd(USART3, ENABLE);

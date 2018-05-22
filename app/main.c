@@ -10,6 +10,14 @@
  * author:      link
  * date:        2016.09.18
  * brief:       增加读保护功能 
+ * version			0.6
+ * author				link
+ * date					2016.11.14
+ * brief				增加多串口支持
+ * version			0.7
+ * author				link
+ * date					2016.12.03
+ * brief				去除开机自动上传版本号，增加ISP跳转升级
 *******************************************************************************/
 #include "led_driver.h"
 #include "can_driver.h"
@@ -17,7 +25,7 @@
 #include "flash_driver.h"
 
 #define APP_ADDR 0x8004000
-
+#define ISP_ADDR 0x1FFFF000
 extern volatile uint32_t UsartTime;
 extern volatile uint32_t UsartCount;
 extern uint8_t  UsartBuffer[1028];
@@ -29,7 +37,6 @@ extern uint8_t CanBuffer[1028];
 void CAN_ExecuteCmd(void);
 
 void WaitTimeOut(void);
-
 volatile uint32_t PageCount;
 volatile uint32_t TimeOut;
 volatile uint8_t isBoot;
@@ -41,13 +48,14 @@ volatile uint8_t isBoot;
  ******************************************************************************/
 int main()
 {
+	
 	isBoot  = 1;
 	TimeOut = 0;
 	FlashInit();
 	CAN_Config();
 	USARTx_Config(115200);
 	CAN_WriteData((uint8_t*)"V0.6",4);
-	USARTx_WriteData((uint8_t*)"V0.6",4);
+	//USARTx_WriteData((uint8_t*)"V0.7",4);
 	
 	while(1) {
 		CAN_ExecuteCmd();
@@ -162,13 +170,20 @@ void USART_ExecuteCmd(void)
 			PageCount++;
 			break;
 		case 'R'://心跳包
-			//USARTx_Port();
 			USARTx_WriteData((uint8_t*)"R",1);
 			isBoot = 0;
+			break;
+		case 'I'://转到ISP
+			//USARTx_WriteData((uint8_t*)"A",1);
+			USARTx_DeInit();
+			JumpToApplication(ISP_ADDR);
 			break;
 		case 'P'://开启写保护
 			FLASH_ReadOutProtection(ENABLE);
 			USARTx_WriteData((uint8_t*)"P",1);
+			break;
+		case 'V':
+			USARTx_WriteData((uint8_t*)"V0.7",4);
 			break;
 		default:
 			//USARTx_WriteData(UsartBuffer,UsartCount);
@@ -176,7 +191,6 @@ void USART_ExecuteCmd(void)
 	}
 	UsartCount = 0;
 }
-
 /*******************************************************************************
  * version:     0.4
  * author:      link
