@@ -120,7 +120,7 @@ void CAN_Config(void)
 uint8_t CAN_WriteData(uint8_t *Message,uint8_t size)
 {
 	uint8_t i;
-
+	uint32_t timeOut = 0;
 	CanTxMsg TxMsg;
 	TxMsg.StdId = 0x40;
 	TxMsg.RTR	= CAN_RTR_DATA;
@@ -131,7 +131,11 @@ uint8_t CAN_WriteData(uint8_t *Message,uint8_t size)
 		TxMsg.Data[i] = Message[i];
 
 	MailBox = CAN_Transmit(CAN1,&TxMsg);
-	while(CAN_TransmitStatus(CAN1,MailBox) != CAN_TxStatus_Ok);
+	while(CAN_TransmitStatus(CAN1,MailBox) != CAN_TxStatus_Ok) {
+		timeOut++;
+		if (timeOut > 1000)
+			break;
+	}
 	return 0;
 }
 
