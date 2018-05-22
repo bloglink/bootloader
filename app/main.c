@@ -10,14 +10,18 @@
  * author:      link
  * date:        2016.09.18
  * brief:       增加读保护功能 
- * version			0.6
- * author				link
- * date					2016.11.14
- * brief				增加多串口支持
- * version			0.7
- * author				link
- * date					2016.12.03
- * brief				去除开机自动上传版本号，增加ISP跳转升级
+ * version		0.6
+ * author		link
+ * date			2016.11.14
+ * brief		增加多串口支持
+ * version		0.7
+ * author		link
+ * date			2016.12.03
+ * brief		去除开机自动上传版本号，增加ISP跳转升级
+ * version		0.8
+ * author		link
+ * date			2016.12.16
+ * brief		修正读保护不能开启的BUG，优化ISP跳转升级
 *******************************************************************************/
 #include "led_driver.h"
 #include "can_driver.h"
@@ -54,8 +58,7 @@ int main()
 	FlashInit();
 	CAN_Config();
 	USARTx_Config(115200);
-	CAN_WriteData((uint8_t*)"V0.6",4);
-	//USARTx_WriteData((uint8_t*)"V0.7",4);
+	CAN_WriteData((uint8_t*)"V0.8",4);
 	
 	while(1) {
 		CAN_ExecuteCmd();
@@ -115,7 +118,9 @@ void CAN_ExecuteCmd(void)
 			isBoot = 0;
 			break;
 		case 'P'://开启读保护
+			FLASH_Unlock();
 			FLASH_ReadOutProtection(ENABLE);
+			FLASH_Lock();
 			CAN_WriteData((uint8_t*)"P",1);//
 			break;
 		default:
@@ -174,19 +179,24 @@ void USART_ExecuteCmd(void)
 			isBoot = 0;
 			break;
 		case 'I'://转到ISP
-			//USARTx_WriteData((uint8_t*)"A",1);
-			USARTx_DeInit();
-			JumpToApplication(ISP_ADDR);
+			if(FLASH_GetReadOutProtectionStatus() != SET) {
+				USARTx_DeInit();
+				JumpToApplication(ISP_ADDR);
+			}
+			USARTx_WriteData((uint8_t*)"N",1);
 			break;
 		case 'P'://开启写保护
-			FLASH_ReadOutProtection(ENABLE);
+			if(FLASH_GetReadOutProtectionStatus() != SET) {
+				FLASH_Unlock();
+				FLASH_ReadOutProtection(ENABLE);   
+				FLASH_Lock();
+			}
 			USARTx_WriteData((uint8_t*)"P",1);
 			break;
 		case 'V':
-			USARTx_WriteData((uint8_t*)"V0.7",4);
+			USARTx_WriteData((uint8_t*)"V0.8",4);
 			break;
 		default:
-			//USARTx_WriteData(UsartBuffer,UsartCount);
 			break;
 	}
 	UsartCount = 0;

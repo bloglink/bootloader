@@ -26,7 +26,7 @@ typedef  void (*pFunction)(void);
 		 PageSize = 0x800;
 	 else
 		 PageSize = 0x400;
- }
+}
 /*******************************************************************************
  * version:    1.0
  * author:     link
@@ -62,7 +62,7 @@ void JumpToApplication(__IO uint32_t Addr)
 {
 	pFunction Jump_To_Application;
 	__IO uint32_t JumpAddress; 
-
+	
 	if (((*(__IO uint32_t*)Addr) & 0x2FFE0000 ) == 0x20000000) { 
 		JumpAddress = *(__IO uint32_t*) (Addr + 4);
 		Jump_To_Application = (pFunction) JumpAddress;
