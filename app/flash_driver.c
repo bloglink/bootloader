@@ -9,24 +9,24 @@
  ******************************************************************************/
 #include "flash_driver.h"
 
-#if defined (STM32F10X_MD) || defined (STM32F10X_MD_VL)
- #define PAGE_SIZE                         (0x400)    /* 1 Kbyte */
- #define FLASH_SIZE                        (0x20000)  /* 128 KBytes */
-#elif defined STM32F10X_CL
- #define PAGE_SIZE                         (0x800)    /* 2 Kbytes */
- #define FLASH_SIZE                        (0x40000)  /* 256 KBytes */
-#elif defined STM32F10X_HD
- #define PAGE_SIZE                         (0x800)    /* 2 Kbytes */
- #define FLASH_SIZE                        (0x80000)  /* 512 KBytes */
-#elif defined STM32F10X_XL
- #define PAGE_SIZE                         (0x800)    /* 2 Kbytes */
- #define FLASH_SIZE                        (0x100000) /* 1 MByte */
-#else 
- #error "Please select first the STM32 device to be used (in stm32f10x.h)"    
-#endif  
-
+volatile uint32_t PageSize;
 
 typedef  void (*pFunction)(void);
+/*******************************************************************************
+ * version:    1.0
+ * author:     link
+ * date:       2016.07.28
+ * brief:      读取页面大小
+ ******************************************************************************/
+ void FlashInit(void)
+ {
+	 uint8_t flash;
+	 flash =  *(__IO u8 *)(0X1FFFF7E0);
+	 if (flash == 0x00)
+		 PageSize = 0x800;
+	 else
+		 PageSize = 0x400;
+ }
 /*******************************************************************************
  * version:    1.0
  * author:     link
@@ -39,33 +39,16 @@ void ProgramData(uint32_t Address, uint8_t *Data)
 	uint32_t temp,temp1,temp2,temp3,temp4;
 
 	FLASH_Unlock();
-	if (Address%PAGE_SIZE == 0)
+	if (Address%PageSize == 0)
 		FLASH_ErasePage(Address);
 
-	for(i=0; i<PAGE_SIZE/4; i++) {
+	for(i=0; i<0x400/4; i++) {
 		temp1 = Data[i*4+4]; 
 		temp2 = Data[i*4+5]; 
 		temp3 = Data[i*4+6]; 
 		temp4 = Data[i*4+7]; 
 		temp = temp1+(temp2<<8)+(temp3<<16)+(temp4<<24);
 		FLASH_ProgramWord(Address+i*4, temp);
-	}
-	FLASH_Lock();
-}
-/*******************************************************************************
- * version:    1.0
- * author:     link
- * date:       2016.06.16
- * brief:      擦出指定扇区区间的Flash数
- ******************************************************************************/
-void ErasePage(uint32_t StartPageAddr,uint32_t Page)
-{
-	uint32_t i;
-
-	FLASH_Unlock();
-
-	for(i=0; i<Page; i++){
-		FLASH_ErasePage(StartPageAddr + i*PAGE_SIZE);
 	}
 	FLASH_Lock();
 }
