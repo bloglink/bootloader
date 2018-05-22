@@ -145,6 +145,8 @@ void CAN_ReceiveData(void)
 {
 	uint8_t i;
 	CanRxMsg RxMsg;
+	if (CanCount >= 1028)
+		return;
 	if (CAN_MessagePending(CAN1,CAN_FIFO0) < 1)
 		return;
 	CAN_Receive(CAN1,CAN_FIFO0,&RxMsg);
@@ -164,7 +166,8 @@ void USB_LP_CAN1_RX0_IRQHandler(void)
 {
 	uint8_t i;
 	CanRxMsg RxMsg;
-
+	if (CanCount >= 1028)
+		return;
 	CAN_Receive(CAN1,CAN_FIFO0, &RxMsg);
 	CAN_ClearITPendingBit(CAN1,CAN_IT_FMP0);
 	for (i=0; i<RxMsg.DLC; i++) {
