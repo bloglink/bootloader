@@ -1,3 +1,16 @@
+/*******************************************************************************
+ * Copyright (c) 2016,青岛艾普智能仪器有限公司
+ * All rights reserved.
+ *
+ * version:     0.4
+ * author:      link
+ * date:        2016.06.29
+ * brief:       增加开机自动上传版本号功能 
+ * version:     0.5
+ * author:      link
+ * date:        2016.09.18
+ * brief:       增加读保护功能 
+*******************************************************************************/
 #include "led_driver.h"
 #include "can_driver.h"
 #include "usart_driver.h"
@@ -20,7 +33,12 @@ void WaitTimeOut(void);
 volatile uint32_t PageCount;
 volatile uint32_t TimeOut;
 volatile uint8_t isBoot;
-
+/*******************************************************************************
+ * version:     0.5
+ * author:      link
+ * date:        2016.09.18
+ * brief:       主程序
+ ******************************************************************************/
 int main()
 {
 	isBoot  = 1;
@@ -28,8 +46,8 @@ int main()
 	FlashInit();
 	CAN_Config();
 	USART1_Config(115200);
-	CAN_WriteData((uint8_t*)"V0.4",4);
-	USART1_WriteData((uint8_t*)"V0.4",4);
+	CAN_WriteData((uint8_t*)"V0.5",4);
+	USART1_WriteData((uint8_t*)"V0.5",4);
 	
 	while(1) {
 		CAN_ExecuteCmd();
@@ -38,13 +56,12 @@ int main()
 		UsartTime++;
 		WaitTimeOut();
 	}
-
 }
 /*******************************************************************************
- * version:    1.0
- * author:     link
- * date:       2016.06.29
- * brief:      CAN执行命令
+ * version:     0.5
+ * author:      link
+ * date:        2016.09.18
+ * brief:       CAN执行命令
  ******************************************************************************/
 void CAN_ExecuteCmd(void)
 {
@@ -85,9 +102,13 @@ void CAN_ExecuteCmd(void)
 			CAN_WriteData((uint8_t*)"A",1);//写入完成
 			PageCount++;
 			break;
-		case 'R'://读数据
+		case 'R'://心跳包
 			CAN_WriteData((uint8_t*)"R",1);
 			isBoot = 0;
+			break;
+		case 'P'://开启读保护
+			FLASH_ReadOutProtection(ENABLE);
+			CAN_WriteData((uint8_t*)"P",1);//
 			break;
 		default:
 			CAN_WriteData(CanBuffer,CanCount);
@@ -96,10 +117,10 @@ void CAN_ExecuteCmd(void)
 	CanCount = 0;
 }
 /*******************************************************************************
- * version:    1.0
- * author:     link
- * date:       2016.06.29
- * brief:      USART执行命令
+ * version:     0.5
+ * author:      link
+ * date:        2016.09.18
+ * brief:       USART执行命令
  ******************************************************************************/
 void USART_ExecuteCmd(void)
 {
@@ -140,9 +161,13 @@ void USART_ExecuteCmd(void)
 			USART1_WriteData((uint8_t*)"A",1);//写入完成
 			PageCount++;
 			break;
-		case 'R'://读数据
+		case 'R'://心跳包
 			USART1_WriteData((uint8_t*)"R",1);
 			isBoot = 0;
+			break;
+		case 'P'://开启写保护
+			FLASH_ReadOutProtection(ENABLE);
+			USART1_WriteData((uint8_t*)"P",1);
 			break;
 		default:
 			USART1_WriteData(UsartBuffer,UsartCount);
@@ -152,10 +177,10 @@ void USART_ExecuteCmd(void)
 }
 
 /*******************************************************************************
- * version:    1.0
- * author:     link
- * date:       2016.07.28
- * brief:      超时跳转 
+ * version:     0.4
+ * author:      link
+ * date:        2016.07.28
+ * brief:       超时跳转 
  ******************************************************************************/
 void WaitTimeOut(void)
 {
