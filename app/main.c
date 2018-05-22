@@ -45,9 +45,9 @@ int main()
 	TimeOut = 0;
 	FlashInit();
 	CAN_Config();
-	USART1_Config(115200);
-	CAN_WriteData((uint8_t*)"V0.5",4);
-	USART1_WriteData((uint8_t*)"V0.5",4);
+	USARTx_Config(115200);
+	CAN_WriteData((uint8_t*)"V0.6",4);
+	USARTx_WriteData((uint8_t*)"V0.6",4);
 	
 	while(1) {
 		CAN_ExecuteCmd();
@@ -111,7 +111,7 @@ void CAN_ExecuteCmd(void)
 			CAN_WriteData((uint8_t*)"P",1);//
 			break;
 		default:
-			CAN_WriteData(CanBuffer,CanCount);
+			//CAN_WriteData(CanBuffer,CanCount);
 			break;
 	}
 	CanCount = 0;
@@ -127,7 +127,7 @@ void USART_ExecuteCmd(void)
 	uint8_t cmd;
 	uint8_t crc;
 	uint32_t i;
-	USART1_ReceiveData();
+	USARTx_ReceiveData();
 	if (UsartTime < 10000)
 		return;
 	UsartTime = 0;
@@ -136,10 +136,10 @@ void USART_ExecuteCmd(void)
 	cmd = UsartBuffer[0];
 	switch (cmd) {
 		case 'C'://同步信号
-			USART1_WriteData((uint8_t*)"C",1);
+			USARTx_WriteData((uint8_t*)"C",1);
 			break;
 		case 'E'://传输完成
-			USART1_WriteData((uint8_t*)"E",1);
+			USARTx_WriteData((uint8_t*)"E",1);
 			PageCount = 0;
 			break;
 		case 'G'://跳转指令
@@ -147,30 +147,31 @@ void USART_ExecuteCmd(void)
 			break;
 		case 'S'://一包数据接收完成
 			if (UsartCount < 1028) {//丢帧
-				USART1_WriteData((uint8_t*)"N",1);
+				USARTx_WriteData((uint8_t*)"N",1);
 				break;
 			}
 			crc = 0;
 			for (i=0; i<1024; i++)//校验和
 				crc += UsartBuffer[i+4];
 			if (crc != UsartBuffer[3]) {
-				USART1_WriteData((uint8_t*)"N",1);
+				USARTx_WriteData((uint8_t*)"N",1);
 				break;
 			}
 			ProgramData((uint32_t)APP_ADDR+PageCount*0x400,UsartBuffer);//写入
-			USART1_WriteData((uint8_t*)"A",1);//写入完成
+			USARTx_WriteData((uint8_t*)"A",1);//写入完成
 			PageCount++;
 			break;
 		case 'R'://心跳包
-			USART1_WriteData((uint8_t*)"R",1);
+			//USARTx_Port();
+			USARTx_WriteData((uint8_t*)"R",1);
 			isBoot = 0;
 			break;
 		case 'P'://开启写保护
 			FLASH_ReadOutProtection(ENABLE);
-			USART1_WriteData((uint8_t*)"P",1);
+			USARTx_WriteData((uint8_t*)"P",1);
 			break;
 		default:
-			USART1_WriteData(UsartBuffer,UsartCount);
+			//USARTx_WriteData(UsartBuffer,UsartCount);
 			break;
 	}
 	UsartCount = 0;
